@@ -1,0 +1,13 @@
+---
+import Base from './Base.astro';
+const { frontmatter } = Astro.props;
+---
+<Base titre={`${frontmatter.titre} | IA Espresso`} description={frontmatter.description} rubrique={frontmatter.rubrique}>
+  <header class="tete-page">
+    <h1>{frontmatter.titre}</h1>
+    {frontmatter.lede && <p>{frontmatter.lede}</p>}
+  </header>
+  <div class="prose">
+    <slot />
+  </div>
+</Base>

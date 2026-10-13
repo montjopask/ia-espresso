@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import Themes from '../components/Themes.astro';
+import Liste from '../components/Liste.astro';
+import {
+  tousLesCrus, lien, lienCru, dateLongue, dateCourte, dateIso, chapeauHtml, minutesLecture, premierePhrase, slugCru,
+} from '../lib/crus';
+import { typo } from '../lib/typo.mjs';
+
+const crus = await tousLesCrus();
+const [jour, ...reste] = crus;
+const precedents = reste.slice(0, 2);
+const anciens = reste.slice(2, 12);
+
+const description = 'Les nouvelles de l’IA générative (texte, images, vidéos) en un cru quotidien, à lire le temps d’une tasse.';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'IA Espresso',
+  inLanguage: 'fr',
+  url: new URL(lien('/'), Astro.site).href,
+  description,
+};
+---
+<Base titre="IA Espresso, les nouvelles de l’IA générative le temps d’une tasse" description={description} jsonld={jsonld} image={lien(`/og/${slugCru(jour)}.png`)}>
+  <h1 class="visuellement-cache">IA Espresso, les nouvelles de l’IA générative le temps d’une tasse</h1>
+
+  <section class="une" aria-labelledby="une-titre">
+    <p class="surtitre une-surtitre">Cru du jour · <time datetime={dateIso(jour.data.date)}>{dateLongue(jour.data.date)}</time></p>
+    <p class="mot" aria-hidden="true">{jour.data.mot}</p>
+    <div class="une-texte">
+      <h2 id="une-titre"><a href={lienCru(jour)}>{typo(jour.data.titre)}</a></h2>
+      <div class="chapeau" set:html={chapeauHtml(jour)} />
+      <Themes themes={jour.data.themes} />
+      <p class="action">
+        <a class="lien-fort" href={lienCru(jour)}>Lire le cru <span aria-hidden="true">→</span></a>
+        <span class="duree">{minutesLecture(jour)} min de lecture</span>
+      </p>
+    </div>
+  </section>
+
+  {precedents.length > 0 && (
+    <section class="section" aria-labelledby="precedents">
+      <h2 class="rubrique" id="precedents">Les jours précédents</h2>
+      <div class="paire">
+        {precedents.map((c) => (
+          <a class="carte" href={lienCru(c)}>
+            <time class="carte-date" datetime={dateIso(c.data.date)}>{dateCourte(c.data.date)}</time>
+            <span class="mot">{c.data.mot}</span>
+            <h3 class="carte-titre">{typo(c.data.titre)}</h3>
+            <p class="carte-extrait">{premierePhrase(c)}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {anciens.length > 0 && (
+    <section class="section" aria-labelledby="anciens">
+      <h2 class="rubrique" id="anciens">Plus anciens</h2>
+      <Liste crus={anciens} />
+      <p class="suite"><a class="lien-simple" href={lien('/archives/')}>Toutes les archives</a></p>
+    </section>
+  )}
+</Base>

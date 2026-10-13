@@ -1,0 +1,30 @@
+---
+import Base from '../../layouts/Base.astro';
+import Liste from '../../components/Liste.astro';
+import { tousLesCrus, type Cru } from '../../lib/crus';
+import { THEMES, LIBELLES, DESCRIPTIONS, type Theme } from '../../lib/themes';
+
+export async function getStaticPaths() {
+  const crus = await tousLesCrus();
+  return THEMES.map((theme) => ({
+    params: { theme },
+    props: { theme, crus: crus.filter((c) => c.data.themes.includes(theme)) },
+  })).filter((p) => p.props.crus.length > 0);
+}
+
+interface Props {
+  theme: Theme;
+  crus: Cru[];
+}
+const { theme, crus } = Astro.props;
+---
+<Base titre={`${LIBELLES[theme]} | IA Espresso`} description={DESCRIPTIONS[theme]} rubrique="themes">
+  <header class="tete-page">
+    <p class="surtitre">Thème</p>
+    <h1>{LIBELLES[theme]}</h1>
+    <p>{DESCRIPTIONS[theme]}</p>
+  </header>
+  <section class="mois">
+    <Liste crus={crus} />
+  </section>
+</Base>

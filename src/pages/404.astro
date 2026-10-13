@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/Base.astro';
+import { lien } from '../lib/crus';
+---
+<Base titre="Page introuvable | IA Espresso" description="Cette page n’existe pas ou plus.">
+  <header class="tete-page">
+    <p class="surtitre">Erreur 404</p>
+    <h1>La tasse est vide</h1>
+    <p>Cette page n’existe pas, ou plus. Le cru du jour, lui, est servi sur <a class="lien-simple" href={lien('/')}>la page d’accueil</a>.</p>
+  </header>
+</Base>

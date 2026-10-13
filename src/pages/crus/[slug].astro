@@ -1,0 +1,72 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Themes from '../../components/Themes.astro';
+import {
+  tousLesCrus, slugCru, lien, lienCru, dateLongue, dateCourte, dateIso, chapeauHtml, minutesLecture, resume, type Cru,
+} from '../../lib/crus';
+import { typo } from '../../lib/typo.mjs';
+import { LIBELLES } from '../../lib/themes';
+
+export async function getStaticPaths() {
+  const crus = await tousLesCrus();
+  return crus.map((cru, i) => ({
+    params: { slug: slugCru(cru) },
+    props: { cru, plusRecent: crus[i - 1], plusAncien: crus[i + 1] },
+  }));
+}
+
+interface Props {
+  cru: Cru;
+  plusRecent?: Cru;
+  plusAncien?: Cru;
+}
+const { cru, plusRecent, plusAncien } = Astro.props;
+const { Content } = await render(cru);
+const d = cru.data;
+const titrePage = `${d.mot} · ${d.titre} | IA Espresso`;
+const description = resume(cru);
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsArticle',
+  headline: d.titre,
+  description,
+  datePublished: dateIso(d.date),
+  inLanguage: 'fr',
+  keywords: [d.mot, ...d.themes.map((t) => LIBELLES[t])].join(', '),
+  image: new URL(lien(`/og/${slugCru(cru)}.png`), Astro.site).href,
+  mainEntityOfPage: new URL(lienCru(cru), Astro.site).href,
+  author: { '@type': 'Organization', name: 'IA Espresso' },
+  publisher: { '@type': 'Organization', name: 'IA Espresso' },
+};
+---
+<Base titre={titrePage} description={description} type="article" jsonld={jsonld} image={lien(`/og/${slugCru(cru)}.png`)}>
+  <article data-pagefind-body>
+    <header class="cru-tete">
+      <a class="retour" href={lien('/')} data-pagefind-ignore>← Tous les crus</a>
+      <p class="surtitre"><time datetime={dateIso(d.date)}>{dateLongue(d.date)}</time> · <span data-pagefind-ignore>{minutesLecture(cru)} min de lecture</span></p>
+      <p class="mot" data-pagefind-meta="mot">{d.mot}</p>
+      <h1 data-pagefind-meta="title">{typo(d.titre)}</h1>
+      <div class="chapeau" set:html={chapeauHtml(cru)} />
+      <div data-pagefind-ignore><Themes themes={d.themes} /></div>
+    </header>
+    <div class="cru-corps">
+      <Content />
+    </div>
+  </article>
+
+  <nav class="voisins" aria-label="Crus voisins">
+    {plusAncien && (
+      <a href={lienCru(plusAncien)}>
+        <span class="sens">← La veille, {dateCourte(plusAncien.data.date)}</span>
+        <span class="mot">{plusAncien.data.mot}</span>
+      </a>
+    )}
+    {plusRecent && (
+      <a class="apres" href={lienCru(plusRecent)}>
+        <span class="sens">Le lendemain, {dateCourte(plusRecent.data.date)} →</span>
+        <span class="mot">{plusRecent.data.mot}</span>
+      </a>
+    )}
+  </nav>
+</Base>

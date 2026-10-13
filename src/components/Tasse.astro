@@ -1,0 +1,91 @@
+---
+// Logo animé, piste « Remplissage » : au premier affichage de la visite, des pixels tombent dans la tasse,
+// s'y empilent, virent du violet au brun puis se fondent en café. La vapeur monte ensuite par petits carrés.
+// Sans JavaScript, ou quand le système demande moins de mouvement, la tasse est servie pleine.
+interface Props {
+  classe?: string;
+}
+const { classe = '' } = Astro.props;
+const id = 'tasse-' + Math.random().toString(36).slice(2, 8);
+const CORPS = 'M30 44 H90 V60 C90 81 77 93 60 93 C43 93 30 81 30 60 Z';
+const bouffees = [
+  { x: 51.4, dx: -3.2, d: 0 },
+  { x: 59.1, dx: 2.4, d: 0.31 },
+  { x: 66.2, dx: -1.1, d: 0.62 },
+  { x: 50.6, dx: 4.1, d: 0.93 },
+  { x: 58.7, dx: -4.4, d: 1.24 },
+  { x: 66.9, dx: 1.8, d: 1.55 },
+  { x: 51.9, dx: -2.0, d: 1.86 },
+  { x: 58.2, dx: 3.3, d: 2.17 },
+  { x: 65.6, dx: -3.7, d: 2.48 },
+];
+---
+<svg class={`tasse ${classe}`} viewBox="0 0 120 110" aria-hidden="true" focusable="false" data-tasse data-clip-haut={`${id}-h`}>
+  <defs>
+    <clipPath id={id}><path d={CORPS} /></clipPath>
+    <clipPath id={`${id}-h`}><path d={CORPS} /><rect x="30" y="0" width="60" height="46" /></clipPath>
+    <linearGradient id={`${id}-g`} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6c3b1d" />
+      <stop offset="1" stop-color="#2b170d" />
+    </linearGradient>
+  </defs>
+  <g clip-path={`url(#${id})`}>
+    <g class="tasse-liquide" data-liquide>
+      <rect x="28" y="51" width="64" height="44" fill={`url(#${id}-g)`} />
+      <rect class="tasse-creme" x="28" y="50" width="64" height="3.4" />
+    </g>
+  </g>
+  <g class="tasse-bouffees">
+    {bouffees.map((b) => (
+      <rect class="tasse-bouffee" x={b.x} y="39" width="3.2" height="3.2" style={`--dx:${b.dx}px;animation-delay:${b.d}s`} />
+    ))}
+  </g>
+  <g class="tasse-trait" data-trait>
+    <path d={CORPS} />
+    <path d="M90 52 C104 52 106 75 89 75" />
+    <path d="M18 100 Q60 106 102 100" />
+  </g>
+</svg>
+
+<script>
+  const NS = 'http://www.w3.org/2000/svg';
+  const TONS = ['#2b170d', '#4b2915', '#6c3b1d', '#8d5629'];
+
+  function remplir(svg: SVGSVGElement) {
+    const clip = svg.dataset.clipHaut;
+    const trait = svg.querySelector('[data-trait]');
+    if (!clip || !trait) return;
+    svg.classList.add('tasse--remplissage');
+    const groupe = document.createElementNS(NS, 'g');
+    groupe.setAttribute('clip-path', `url(#${clip})`);
+    groupe.setAttribute('class', 'tasse-pixels');
+    for (let r = 0; r < 7; r++) {
+      const y = 87 - 6 * r;
+      for (let c = 0; c < 10; c++) {
+        let t = r < 2 ? 0 : r < 4 ? 1 : r < 6 ? 2 : 3;
+        if (Math.random() < 0.3) t = Math.max(0, Math.min(3, t + (Math.random() < 0.5 ? -1 : 1)));
+        const px = document.createElementNS(NS, 'rect');
+        px.setAttribute('x', String(30 + 6 * c + 0.5));
+        px.setAttribute('y', String(y + 0.5));
+        px.setAttribute('width', '5');
+        px.setAttribute('height', '5');
+        px.setAttribute('rx', '0.6');
+        px.setAttribute('class', 'tasse-px');
+        px.style.setProperty('--ton', TONS[t]);
+        px.style.setProperty('--depart', `${-(y + 12)}px`);
+        px.style.animationDelay = `${(0.25 + r * 0.24 + Math.random() * 0.22).toFixed(2)}s`;
+        groupe.appendChild(px);
+      }
+    }
+    svg.insertBefore(groupe, trait);
+    window.setTimeout(() => groupe.remove(), 4200);
+  }
+
+  const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let dejaVu = false;
+  try {
+    dejaVu = sessionStorage.getItem('tasse-servie') === '1';
+    sessionStorage.setItem('tasse-servie', '1');
+  } catch (e) {}
+  if (!reduit && !dejaVu) document.querySelectorAll<SVGSVGElement>('[data-tasse]').forEach(remplir);
+</script>

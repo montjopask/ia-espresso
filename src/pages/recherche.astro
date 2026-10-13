@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import { lien } from '../lib/crus';
+const base = lien('/');
+---
+<Base titre="Recherche | IA Espresso" description="Chercher un sujet, un modèle ou un nom dans tous les crus d’IA Espresso." rubrique="recherche">
+  <header class="tete-page">
+    <h1>Recherche</h1>
+    <p>Un modèle, une entreprise, un nom, une idée&nbsp;: la recherche parcourt tous les crus.</p>
+  </header>
+  <div class="recherche-zone">
+    <div id="recherche" data-base={base}></div>
+    <noscript><p>La recherche a besoin de JavaScript. Les <a class="lien-simple" href={lien('/archives/')}>archives</a> restent consultables sans.</p></noscript>
+  </div>
+  <link rel="stylesheet" href={lien('/pagefind/pagefind-ui.css')} />
+  <script is:inline src={lien('/pagefind/pagefind-ui.js')}></script>
+  <script is:inline>
+    (function () {
+      var zone = document.getElementById('recherche');
+      if (!window.PagefindUI || !zone) return;
+      new PagefindUI({
+        element: '#recherche',
+        baseUrl: zone.dataset.base,
+        showSubResults: true,
+        showImages: false,
+        resetStyles: false,
+        autofocus: true,
+      });
+    })();
+  </script>
+</Base>

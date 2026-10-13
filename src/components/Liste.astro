@@ -1,0 +1,22 @@
+---
+import { dateCourte, dateIso, lienCru, type Cru } from '../lib/crus';
+import { typo } from '../lib/typo.mjs';
+import { LIBELLES } from '../lib/themes';
+
+interface Props {
+  crus: Cru[];
+}
+const { crus } = Astro.props;
+---
+<ol class="liste">
+  {crus.map((c) => (
+    <li>
+      <a href={lienCru(c)}>
+        <time class="liste-date" datetime={dateIso(c.data.date)}>{dateCourte(c.data.date)}</time>
+        <span class="mot">{c.data.mot}</span>
+        <span class="liste-titre">{typo(c.data.titre)}</span>
+        <span class="liste-themes">{c.data.themes.slice(0, 2).map((t) => LIBELLES[t]).join(' · ')}</span>
+      </a>
+    </li>
+  ))}
+</ol>

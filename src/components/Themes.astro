@@ -1,0 +1,14 @@
+---
+import { LIBELLES, type Theme } from '../lib/themes';
+import { lien } from '../lib/crus';
+
+interface Props {
+  themes: readonly Theme[];
+}
+const { themes } = Astro.props;
+---
+<ul class="themes" aria-label="Thèmes">
+  {themes.map((t) => (
+    <li><a href={lien(`/themes/${t}/`)}>{LIBELLES[t]}</a></li>
+  ))}
+</ul>

@@ -1,0 +1,34 @@
+---
+import Base from '../../layouts/Base.astro';
+import { tousLesCrus, lien } from '../../lib/crus';
+import { THEMES, LIBELLES, DESCRIPTIONS } from '../../lib/themes';
+
+const crus = await tousLesCrus();
+const compte = (t: string) => crus.filter((c) => (c.data.themes as readonly string[]).includes(t)).length;
+const themes = THEMES.map((t) => ({ t, n: compte(t) })).sort((a, b) => b.n - a.n);
+---
+<Base titre="Thèmes | IA Espresso" description="Les crus d’IA Espresso classés par thème : modèles, agents, créativité, éthique et les autres." rubrique="themes">
+  <header class="tete-page">
+    <h1>Thèmes</h1>
+    <p>Chaque cru touche deux à quatre thèmes. Les voici, du plus fréquent au plus rare.</p>
+  </header>
+  <ul class="grille-themes">
+    {themes.map(({ t, n }) => (
+      <li>
+        {n > 0 ? (
+          <a href={lien(`/themes/${t}/`)}>
+            <span class="nom">{LIBELLES[t]}</span>
+            <span class="desc">{DESCRIPTIONS[t]}</span>
+            <span class="compte">{n} {n > 1 ? 'crus' : 'cru'}</span>
+          </a>
+        ) : (
+          <div class="vide">
+            <span class="nom">{LIBELLES[t]}</span>
+            <span class="desc">{DESCRIPTIONS[t]}</span>
+            <span class="compte">Aucun cru pour l’instant</span>
+          </div>
+        )}
+      </li>
+    ))}
+  </ul>
+</Base>

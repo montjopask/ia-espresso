@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import Liste from '../components/Liste.astro';
+import { tousLesCrus, moisAnnee, type Cru } from '../lib/crus';
+
+const crus = await tousLesCrus();
+const parMois = new Map<string, Cru[]>();
+for (const c of crus) {
+  const cle = c.id.slice(0, 7);
+  if (!parMois.has(cle)) parMois.set(cle, []);
+  parMois.get(cle)!.push(c);
+}
+---
+<Base titre="Archives | IA Espresso" description="Tous les crus d’IA Espresso, du plus récent au plus ancien." rubrique="archives">
+  <header class="tete-page">
+    <h1>Archives</h1>
+    <p>Tous les crus, du plus récent au plus ancien. Chacun porte son mot du jour.</p>
+  </header>
+  {[...parMois.entries()].map(([cle, liste]) => (
+    <section class="mois" aria-labelledby={`m-${cle}`}>
+      <h2 id={`m-${cle}`}>{moisAnnee(liste[0].data.date)}</h2>
+      <Liste crus={liste} />
+    </section>
+  ))}
+</Base>
