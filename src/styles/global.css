@@ -163,8 +163,8 @@ img, svg { max-width: 100%; }
   z-index: 10;
   display: grid;
   place-items: center;
-  width: 64px;
-  height: 64px;
+  width: 128px;
+  height: 128px;
   border-radius: 50%;
   background: var(--fond-2);
   border: 1px solid var(--trait);
@@ -174,7 +174,11 @@ img, svg { max-width: 100%; }
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 .tasse-lecture.visible { opacity: 1; transform: none; pointer-events: auto; }
-.tasse-lecture .tasse { width: 44px; height: auto; overflow: visible; margin-top: -4px; }
+.tasse-lecture .tasse { width: 88px; height: auto; overflow: visible; margin-top: -8px; }
+@media (max-width: 520px) {
+  .tasse-lecture { width: 96px; height: 96px; }
+  .tasse-lecture .tasse { width: 66px; margin-top: -6px; }
+}
 
 .tasse-bouffee {
   fill: var(--tasse);

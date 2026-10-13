@@ -91,7 +91,11 @@ const bouffees = [
     dejaVu = sessionStorage.getItem('tasse-servie') === '1';
     sessionStorage.setItem('tasse-servie', '1');
   } catch (e) {}
-  if (!reduit && !dejaVu) document.querySelectorAll<SVGSVGElement>('[data-tasse]').forEach(remplir);
+  if (!reduit && !dejaVu) {
+    document.querySelectorAll<SVGSVGElement>('[data-tasse]').forEach((t) => {
+      if (!t.closest('[data-tasse-lecture]')) remplir(t);
+    });
+  }
 
   // Jauge de lecture : sur la page d'un cru, la tasse se vide à mesure qu'on lit, et la vapeur faiblit.
   const article = document.querySelector<HTMLElement>('[data-jauge]');
