@@ -45,6 +45,26 @@ for (const fichier of fichiers) {
 
 if (fichiers.length === 0) erreurs.push('aucun cru trouvé');
 
+// Liens vagues : une page d'accueil, un profil X, un index de blog ou un forum entier au lieu de la source précise.
+// Signalés sans bloquer la publication.
+const avertissements = [];
+for (const fichier of fichiers) {
+  const brut = readFileSync(join(DOSSIER, fichier), 'utf8');
+  for (const [, texte, url] of brut.matchAll(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g)) {
+    let u;
+    try { u = new URL(url); } catch { avertissements.push(`${fichier} : lien illisible « ${url} »`); continue; }
+    const morceaux = u.pathname.split('/').filter(Boolean);
+    const hote = u.hostname.replace(/^www\./, '');
+    const vague =
+      (morceaux.length === 0 && !u.search) ||
+      (/^(x|twitter)\.com$/.test(hote) && !morceaux.includes('status')) ||
+      (hote.endsWith('reddit.com') && !morceaux.includes('comments')) ||
+      (morceaux.length <= 2 && ['blog', 'news', 'newsroom', 'research', 'press', 'category'].includes(morceaux.at(-1)));
+    if (vague) avertissements.push(`${fichier} : lien vague « ${texte} » → ${url}`);
+  }
+}
+if (avertissements.length) console.warn(`\nLiens à préciser :\n- ${avertissements.join('\n- ')}\n`);
+
 if (erreurs.length) {
   console.error(`\n${erreurs.length} problème(s) dans les crus :\n- ${erreurs.join('\n- ')}\n`);
   process.exit(1);
