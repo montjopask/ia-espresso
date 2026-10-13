@@ -155,6 +155,19 @@ img, svg { max-width: 100%; }
 [data-liquide] { transition: transform 0.25s linear; }
 [data-vapeur] { transition: opacity 0.4s linear; }
 
+/* L'ouverture : la tasse se remplit en grand, puis rejoint l'en-tête */
+.tasse-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background-color: color-mix(in srgb, var(--fond) 94%, transparent);
+  cursor: pointer;
+}
+.tasse-intro--depart { background-color: transparent; }
+.tasse-intro .tasse { width: min(56vw, 320px); height: auto; overflow: visible; }
+
 /* La tasse de lecture : elle suit le lecteur une fois l'en-tête sorti de l'écran */
 .tasse-lecture {
   position: fixed;

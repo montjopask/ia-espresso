@@ -85,6 +85,65 @@ const bouffees = [
     window.setTimeout(() => groupe.remove(), 4200);
   }
 
+  // Le clone de l'ouverture reçoit ses propres identifiants, pour ne pas viser les découpes de la tasse d'origine.
+  function renommerIds(svg: SVGSVGElement, suffixe: string) {
+    const noeuds = Array.from(svg.querySelectorAll<SVGElement>('*'));
+    svg.querySelectorAll<SVGElement>('[id]').forEach((el) => {
+      const ancien = el.id;
+      const nouveau = ancien + suffixe;
+      el.id = nouveau;
+      for (const n of noeuds) {
+        for (const att of ['clip-path', 'fill']) {
+          const v = n.getAttribute(att);
+          if (v && v.includes(`#${ancien})`)) n.setAttribute(att, v.replace(`#${ancien})`, `#${nouveau})`));
+        }
+      }
+    });
+    if (svg.dataset.clipHaut) svg.dataset.clipHaut += suffixe;
+  }
+
+  // Ouverture : la tasse se remplit en grand au milieu de l'écran, puis rejoint sa place dans l'en-tête.
+  // Un clic, une touche ou un défilement l'envoie tout de suite à sa place.
+  function ouverture(cible: SVGSVGElement) {
+    const voile = document.createElement('div');
+    voile.className = 'tasse-intro';
+    voile.setAttribute('aria-hidden', 'true');
+    const clone = cible.cloneNode(true) as SVGSVGElement;
+    renommerIds(clone, '-intro');
+    voile.appendChild(clone);
+    document.body.appendChild(voile);
+    cible.style.opacity = '0';
+    remplir(clone);
+
+    let parti = false;
+    const rejoindre = (duree: number) => {
+      if (parti) return;
+      parti = true;
+      const de = clone.getBoundingClientRect();
+      const vers = cible.getBoundingClientRect();
+      clone.style.transformOrigin = '0 0';
+      clone.style.transition = `transform ${duree}ms cubic-bezier(.65, 0, .25, 1)`;
+      voile.style.transition = `background-color ${Math.round(duree * 0.8)}ms ease`;
+      requestAnimationFrame(() => {
+        clone.style.transform = `translate(${vers.left - de.left}px, ${vers.top - de.top}px) scale(${vers.width / de.width})`;
+        voile.classList.add('tasse-intro--depart');
+      });
+      window.setTimeout(() => {
+        cible.style.opacity = '';
+        voile.remove();
+      }, duree + 60);
+    };
+    const minuterie = window.setTimeout(() => rejoindre(1100), 2350);
+    const passer = () => {
+      window.clearTimeout(minuterie);
+      rejoindre(450);
+    };
+    voile.addEventListener('click', passer);
+    window.addEventListener('keydown', passer, { once: true });
+    window.addEventListener('wheel', passer, { once: true, passive: true });
+    window.addEventListener('touchmove', passer, { once: true, passive: true });
+  }
+
   const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let dejaVu = false;
   try {
@@ -92,9 +151,8 @@ const bouffees = [
     sessionStorage.setItem('tasse-servie', '1');
   } catch (e) {}
   if (!reduit && !dejaVu) {
-    document.querySelectorAll<SVGSVGElement>('[data-tasse]').forEach((t) => {
-      if (!t.closest('[data-tasse-lecture]')) remplir(t);
-    });
+    const cible = document.querySelector<SVGSVGElement>('.marque [data-tasse]');
+    if (cible) ouverture(cible);
   }
 
   // Jauge de lecture : sur la page d'un cru, la tasse se vide à mesure qu'on lit, et la vapeur faiblit.
