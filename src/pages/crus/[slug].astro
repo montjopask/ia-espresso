@@ -47,7 +47,7 @@ const jsonld = {
     <header class="cru-tete">
       <a class="retour" href={lien('/')} data-pagefind-ignore>← Tous les crus</a>
       <p class="surtitre"><time datetime={dateIso(d.date)}>{dateLongue(d.date)}</time> · <span data-pagefind-ignore>{minutesLecture(cru)} min de lecture</span></p>
-      <p class="mot" data-pagefind-meta="mot">{d.mot}</p>
+      <p class="mot">{d.mot}</p>
       <h1 data-pagefind-meta="title">{typo(d.titre)}</h1>
       <div class="chapeau" set:html={chapeauHtml(cru)} />
       <div data-pagefind-ignore><Themes themes={d.themes} /></div>
