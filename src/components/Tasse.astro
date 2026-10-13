@@ -30,15 +30,19 @@ const bouffees = [
     </linearGradient>
   </defs>
   <g clip-path={`url(#${id})`}>
+    <ellipse class="tasse-fond" cx="60" cy="92.5" rx="18" ry="2.6" />
+    <rect class="tasse-cerne" x="28" y="50.6" width="64" height="1.1" />
     <g class="tasse-liquide" data-liquide>
       <rect x="28" y="51" width="64" height="44" fill={`url(#${id}-g)`} />
       <rect class="tasse-creme" x="28" y="50" width="64" height="3.4" />
     </g>
   </g>
-  <g class="tasse-bouffees">
-    {bouffees.map((b) => (
-      <rect class="tasse-bouffee" x={b.x} y="39" width="3.2" height="3.2" style={`--dx:${b.dx}px;animation-delay:${b.d}s`} />
-    ))}
+  <g data-vapeur>
+    <g class="tasse-bouffees">
+      {bouffees.map((b) => (
+        <rect class="tasse-bouffee" x={b.x} y="39" width="3.2" height="3.2" style={`--dx:${b.dx}px;animation-delay:${b.d}s`} />
+      ))}
+    </g>
   </g>
   <g class="tasse-trait" data-trait>
     <path d={CORPS} />
@@ -88,4 +92,35 @@ const bouffees = [
     sessionStorage.setItem('tasse-servie', '1');
   } catch (e) {}
   if (!reduit && !dejaVu) document.querySelectorAll<SVGSVGElement>('[data-tasse]').forEach(remplir);
+
+  // Jauge de lecture : sur la page d'un cru, la tasse se vide à mesure qu'on lit, et la vapeur faiblit.
+  const article = document.querySelector<HTMLElement>('[data-jauge]');
+  if (article) {
+    const tasses = Array.from(document.querySelectorAll<SVGSVGElement>('[data-tasse]'));
+    const flottante = document.querySelector<HTMLElement>('[data-tasse-lecture]');
+    const entete = document.querySelector<HTMLElement>('.entete');
+    let attente = false;
+    const mesurer = () => {
+      attente = false;
+      const r = article.getBoundingClientRect();
+      const course = Math.max(1, r.height - window.innerHeight * 0.55);
+      const p = Math.min(1, Math.max(0, (window.innerHeight * 0.3 - r.top) / course));
+      for (const t of tasses) {
+        const liquide = t.querySelector<SVGGElement>('[data-liquide]');
+        const vapeur = t.querySelector<SVGGElement>('[data-vapeur]');
+        if (liquide) liquide.style.transform = `translateY(${(42.5 * p).toFixed(2)}px)`;
+        if (vapeur) vapeur.style.opacity = (1 - p).toFixed(2);
+      }
+      if (flottante && entete) flottante.classList.toggle('visible', entete.getBoundingClientRect().bottom < 0);
+    };
+    const demander = () => {
+      if (!attente) {
+        attente = true;
+        requestAnimationFrame(mesurer);
+      }
+    };
+    window.addEventListener('scroll', demander, { passive: true });
+    window.addEventListener('resize', demander);
+    mesurer();
+  }
 </script>

@@ -150,6 +150,32 @@ img, svg { max-width: 100%; }
 
 .tasse-trait path { fill: none; stroke: var(--tasse); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
 .tasse-creme { fill: var(--creme); }
+.tasse-cerne { fill: #8d5629; opacity: 0.5; }
+.tasse-fond { fill: #4b2915; opacity: 0.75; }
+[data-liquide] { transition: transform 0.25s linear; }
+[data-vapeur] { transition: opacity 0.4s linear; }
+
+/* La tasse de lecture : elle suit le lecteur une fois l'en-tête sorti de l'écran */
+.tasse-lecture {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--fond-2);
+  border: 1px solid var(--trait);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.tasse-lecture.visible { opacity: 1; transform: none; pointer-events: auto; }
+.tasse-lecture .tasse { width: 44px; height: auto; overflow: visible; margin-top: -4px; }
+
 .tasse-bouffee {
   fill: var(--tasse);
   opacity: 0;
