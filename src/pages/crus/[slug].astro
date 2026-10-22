@@ -51,7 +51,7 @@ const jsonld = {
   <article data-pagefind-body data-jauge>
     <header class="cru-tete">
       <a class="retour" href={lien('/')} data-pagefind-ignore>← Tous les crus</a>
-      <p class="surtitre">{estSpeciale(cru) && <span class="rubrique-speciale">Édition spéciale · </span>}<time datetime={dateIso(d.date)}>{dateLongue(d.date)}</time> · <span data-pagefind-ignore>{minutesLecture(cru)} min de lecture</span></p>
+      <p class="surtitre">{estSpeciale(cru) && <span class="rubrique-speciale">Édition spéciale · </span>}<time datetime={dateIso(d.date)}>{dateLongue(d.date)}</time> · <span data-pagefind-ignore>{minutesLecture(cru)}&nbsp;min de lecture</span></p>
       <p class="mot">{d.mot}</p>
       <h1 data-pagefind-meta="title">{typo(d.titre)}</h1>
       <div class="chapeau" set:html={chapeauHtml(cru)} />

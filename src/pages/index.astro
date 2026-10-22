@@ -38,7 +38,7 @@ const jsonld = {
       <Themes themes={jour.data.themes} />
       <p class="action">
         <a class="lien-fort" href={lienCru(jour)}>Lire le cru <span aria-hidden="true">→</span></a>
-        <span class="duree">{minutesLecture(jour)} min de lecture</span>
+        <span class="duree">{minutesLecture(jour)}&nbsp;min de lecture</span>
       </p>
     </div>
   </section>
@@ -54,7 +54,7 @@ const jsonld = {
         <div class="speciale-texte">
           <h3 class="carte-titre">{typo(speciale.data.titre)}</h3>
           <div class="carte-extrait chapeau" set:html={chapeauHtml(speciale)} />
-          <p class="speciale-suite"><span class="speciale-lire">Lire l’édition <span aria-hidden="true">→</span></span> <span class="duree">{minutesLecture(speciale)} min de lecture</span></p>
+          <p class="speciale-suite"><span class="speciale-lire">Lire l’édition <span aria-hidden="true">→</span></span> <span class="duree">{minutesLecture(speciale)}&nbsp;min de lecture</span></p>
         </div>
       </a>
     </section>
