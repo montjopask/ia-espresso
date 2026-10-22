@@ -2,14 +2,29 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import { marked } from 'marked';
 import { typo } from './typo.mjs';
 
-export type Cru = CollectionEntry<'crus'>;
+export type Cru = CollectionEntry<'crus'> | CollectionEntry<'speciales'>;
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 export const lien = (chemin: string) => BASE + chemin;
 
+export const estSpeciale = (c: Cru) => c.collection === 'speciales';
+
+const parDate = (a: Cru, b: Cru) =>
+  b.data.date.getTime() - a.data.date.getTime() || Number(estSpeciale(a)) - Number(estSpeciale(b));
+
+// Les crus quotidiens seuls, du plus récent au plus ancien.
+export async function crusQuotidiens(): Promise<Cru[]> {
+  return (await getCollection('crus')).sort(parDate);
+}
+
+// Les éditions spéciales seules, de la plus récente à la plus ancienne.
+export async function editionsSpeciales(): Promise<Cru[]> {
+  return (await getCollection('speciales')).sort(parDate);
+}
+
+// Tout ensemble ; le même jour, le cru quotidien passe avant l'édition spéciale.
 export async function tousLesCrus(): Promise<Cru[]> {
-  const liste = await getCollection('crus');
-  return liste.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+  return [...(await getCollection('crus')), ...(await getCollection('speciales'))].sort(parDate);
 }
 
 export function slugMot(mot: string): string {
@@ -21,7 +36,7 @@ export function slugMot(mot: string): string {
     .replace(/^-|-$/g, '');
 }
 
-export const slugCru = (c: Cru) => `${c.id}-${slugMot(c.data.mot)}`;
+export const slugCru = (c: Cru) => `${c.id}-${estSpeciale(c) ? 'speciale-' : ''}${slugMot(c.data.mot)}`;
 export const lienCru = (c: Cru) => lien(`/crus/${slugCru(c)}/`);
 
 const formatLong = new Intl.DateTimeFormat('fr-FR', {

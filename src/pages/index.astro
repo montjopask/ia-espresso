@@ -3,14 +3,18 @@ import Base from '../layouts/Base.astro';
 import Themes from '../components/Themes.astro';
 import Liste from '../components/Liste.astro';
 import {
-  tousLesCrus, lien, lienCru, dateLongue, dateCourte, dateIso, chapeauHtml, minutesLecture, premierePhrase, slugCru,
+  crusQuotidiens, editionsSpeciales, lien, lienCru, dateLongue, dateCourte, dateIso, chapeauHtml, minutesLecture, premierePhrase, slugCru,
 } from '../lib/crus';
 import { typo } from '../lib/typo.mjs';
 
-const crus = await tousLesCrus();
+const crus = await crusQuotidiens();
 const [jour, ...reste] = crus;
 const precedents = reste.slice(0, 2);
 const anciens = reste.slice(2, 12);
+
+// Une édition spéciale reste à l'accueil dix jours, le temps de dix crus.
+const DIX_JOURS = 10 * 24 * 3600 * 1000;
+const speciale = (await editionsSpeciales()).find((s) => jour.data.date.getTime() - s.data.date.getTime() < DIX_JOURS);
 
 const description = 'Les nouvelles de l’IA générative (texte, images, vidéos) en un cru quotidien, à lire le temps d’une tasse.';
 const jsonld = {
@@ -38,6 +42,23 @@ const jsonld = {
       </p>
     </div>
   </section>
+
+  {speciale && (
+    <section class="section" aria-labelledby="speciale">
+      <h2 class="rubrique rubrique-speciale" id="speciale">Édition spéciale</h2>
+      <a class="carte speciale" href={lienCru(speciale)}>
+        <div class="speciale-tete">
+          <time class="carte-date" datetime={dateIso(speciale.data.date)}>{dateCourte(speciale.data.date)}</time>
+          <span class="mot">{speciale.data.mot}</span>
+        </div>
+        <div class="speciale-texte">
+          <h3 class="carte-titre">{typo(speciale.data.titre)}</h3>
+          <div class="carte-extrait chapeau" set:html={chapeauHtml(speciale)} />
+          <p class="speciale-suite"><span class="speciale-lire">Lire l’édition <span aria-hidden="true">→</span></span> <span class="duree">{minutesLecture(speciale)} min de lecture</span></p>
+        </div>
+      </a>
+    </section>
+  )}
 
   {precedents.length > 0 && (
     <section class="section" aria-labelledby="precedents">

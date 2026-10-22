@@ -4,17 +4,22 @@ import Base from '../../layouts/Base.astro';
 import Themes from '../../components/Themes.astro';
 import Tasse from '../../components/Tasse.astro';
 import {
-  tousLesCrus, slugCru, lien, lienCru, dateLongue, dateCourte, dateIso, chapeauHtml, minutesLecture, resume, type Cru,
+  crusQuotidiens, editionsSpeciales, estSpeciale, slugCru, lien, lienCru, dateLongue, dateCourte, dateIso, chapeauHtml, minutesLecture, resume, type Cru,
 } from '../../lib/crus';
 import { typo } from '../../lib/typo.mjs';
 import { LIBELLES } from '../../lib/themes';
 
 export async function getStaticPaths() {
-  const crus = await tousLesCrus();
-  return crus.map((cru, i) => ({
-    params: { slug: slugCru(cru) },
-    props: { cru, plusRecent: crus[i - 1], plusAncien: crus[i + 1] },
-  }));
+  // La veille et le lendemain se comptent entre crus quotidiens ; une édition spéciale n'a pas de voisins.
+  const crus = await crusQuotidiens();
+  const speciales = await editionsSpeciales();
+  return [
+    ...crus.map((cru, i) => ({
+      params: { slug: slugCru(cru) },
+      props: { cru, plusRecent: crus[i - 1], plusAncien: crus[i + 1] },
+    })),
+    ...speciales.map((cru) => ({ params: { slug: slugCru(cru) }, props: { cru } })),
+  ];
 }
 
 interface Props {
@@ -46,7 +51,7 @@ const jsonld = {
   <article data-pagefind-body data-jauge>
     <header class="cru-tete">
       <a class="retour" href={lien('/')} data-pagefind-ignore>← Tous les crus</a>
-      <p class="surtitre"><time datetime={dateIso(d.date)}>{dateLongue(d.date)}</time> · <span data-pagefind-ignore>{minutesLecture(cru)} min de lecture</span></p>
+      <p class="surtitre">{estSpeciale(cru) && <span class="rubrique-speciale">Édition spéciale · </span>}<time datetime={dateIso(d.date)}>{dateLongue(d.date)}</time> · <span data-pagefind-ignore>{minutesLecture(cru)} min de lecture</span></p>
       <p class="mot">{d.mot}</p>
       <h1 data-pagefind-meta="title">{typo(d.titre)}</h1>
       <div class="chapeau" set:html={chapeauHtml(cru)} />

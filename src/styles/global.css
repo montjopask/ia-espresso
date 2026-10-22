@@ -363,6 +363,27 @@ img, svg { max-width: 100%; }
 .carte-extrait { margin: 0; color: var(--encre-2); font-size: 16px; line-height: 1.55; }
 .carte-date { font-size: 13px; color: var(--encre-3); font-variant-numeric: tabular-nums; }
 
+/* ---------- Accueil : édition spéciale ---------- */
+
+.rubrique-speciale { color: var(--accent); }
+.speciale {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+  gap: 18px clamp(24px, 4vw, 56px);
+  align-items: start;
+  padding: clamp(26px, 3.5vw, 40px);
+}
+.speciale-tete { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.speciale .mot { font-size: clamp(48px, 7vw, 92px); padding-bottom: 0.06em; }
+.speciale-texte { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.speciale .carte-titre { margin: 0; font-size: clamp(22px, 2.4vw, 27px); }
+.speciale .chapeau { font-size: 16.5px; max-width: 60ch; }
+.speciale-suite { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; margin: 4px 0 0; }
+.speciale-lire { color: var(--accent-fort); font-weight: 600; }
+.speciale-lire span { display: inline-block; transition: transform 0.2s ease; }
+.speciale:hover .speciale-lire span { transform: translateX(3px); }
+.liste-speciale { color: var(--accent); }
+
 /* ---------- Listes compactes ---------- */
 
 .liste { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 2px; }
@@ -545,7 +566,7 @@ img, svg { max-width: 100%; }
 
 @media (max-width: 860px) {
   .une { grid-template-columns: 1fr; align-items: start; }
-  .paire, .voisins { grid-template-columns: 1fr; }
+  .paire, .voisins, .speciale { grid-template-columns: 1fr; }
   .voisins .apres { grid-column: auto; text-align: left; }
   .liste a { grid-template-columns: 6.2em minmax(0, 1fr); }
   .liste-titre { grid-column: 2; }

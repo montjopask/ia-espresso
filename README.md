@@ -43,6 +43,10 @@ Phrase de contexte.
 
 Thèmes possibles : `modeles`, `agents`, `creativite`, `raisonnement`, `code`, `memoire`, `recherche`, `infrastructure`, `entreprise`, `ethique`.
 
+## Éditions spéciales
+
+Une édition spéciale consacre tout un numéro à un seul sujet. Elle vit dans `src/content/speciales/AAAA-MM-JJ.md`, avec le même en-tête qu’un cru ; son mot du jour ne doit avoir servi à aucun cru, quotidien ou spécial. Elle ne remplace pas le cru du jour : l’accueil la présente dans un encadré à part pendant dix jours, les archives et les thèmes la rangent avec les autres, et son adresse porte la mention `speciale` (`/crus/AAAA-MM-JJ-speciale-mot/`).
+
 ## Travailler en local
 
 ```bash

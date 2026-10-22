@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { Resvg } from '@resvg/resvg-js';
 import { join } from 'node:path';
-import { tousLesCrus, slugCru, dateCourte, type Cru } from '../../lib/crus';
+import { tousLesCrus, slugCru, dateCourte, estSpeciale, type Cru } from '../../lib/crus';
 
 // Images de partage (1200 × 630), fabriquées une fois par cru au moment de la construction du site.
 const POLICES = ['Fraunces-Italic-500.ttf', 'Fraunces-600.ttf', 'EncodeSans-400.ttf', 'EncodeSansCondensed-600.ttf'].map((f) =>
@@ -35,7 +35,7 @@ function couper(texte: string, max: number): string[] {
 function dessin(cru?: Cru): string {
   const mot = cru ? cru.data.mot : 'Espresso';
   const titre = cru ? cru.data.titre : 'Les nouvelles de l’IA générative, le temps d’une tasse';
-  const date = cru ? dateCourte(cru.data.date) : 'Un cru chaque matin';
+  const date = cru ? `${estSpeciale(cru) ? 'Édition spéciale · ' : ''}${dateCourte(cru.data.date)}` : 'Un cru chaque matin';
   const taille = Math.min(200, Math.floor(1050 / (mot.length * 0.52)));
   let lignes = couper(titre, 44);
   if (lignes.length > 3) {

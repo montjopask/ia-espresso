@@ -1,19 +1,23 @@
 // Contrôle des crus avant chaque construction du site.
 // Si un cru est mal formé, la construction s'arrête et le site en ligne reste sur la version précédente.
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import yaml from 'js-yaml';
 
-const DOSSIER = 'src/content/crus';
+// Les crus quotidiens et les éditions spéciales obéissent aux mêmes règles ; le mot du jour ne sert qu'une fois, toutes séries confondues.
+const DOSSIERS = ['src/content/crus', 'src/content/speciales'];
 const THEMES = ['modeles', 'agents', 'creativite', 'raisonnement', 'code', 'memoire', 'recherche', 'infrastructure', 'entreprise', 'ethique'];
 
 const erreurs = [];
 const mots = new Map();
-const fichiers = readdirSync(DOSSIER).filter((f) => f.endsWith('.md')).sort();
+const fichiers = DOSSIERS.flatMap((d) =>
+  existsSync(d) ? readdirSync(d).filter((f) => f.endsWith('.md')).sort().map((f) => ({ d, f })) : [],
+);
 
-for (const fichier of fichiers) {
-  const ici = (msg) => erreurs.push(`${fichier} : ${msg}`);
-  const brut = readFileSync(join(DOSSIER, fichier), 'utf8');
+for (const { d, f: fichier } of fichiers) {
+  const nom = `${d.split('/').pop()}/${fichier}`;
+  const ici = (msg) => erreurs.push(`${nom} : ${msg}`);
+  const brut = readFileSync(join(d, fichier), 'utf8');
   const m = brut.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
   if (!m) { ici('en-tête YAML absent ou mal fermé'); continue; }
   let fm;
@@ -30,7 +34,7 @@ for (const fichier of fichiers) {
   if (!/^\p{L}[\p{L}’'-]*$/u.test(mot)) ici(`mot du jour invalide (« ${mot} ») : un seul mot attendu`);
   const cle = mot.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   if (mots.has(cle)) ici(`mot du jour « ${mot} » déjà pris par ${mots.get(cle)}`);
-  else mots.set(cle, fichier);
+  else mots.set(cle, nom);
 
   const themes = Array.isArray(fm.themes) ? fm.themes : [];
   if (themes.length < 1 || themes.length > 4) ici('il faut entre un et quatre thèmes');
@@ -43,13 +47,14 @@ for (const fichier of fichiers) {
   if (/· · ·/.test(corps)) ici('séparateur « · · · » à retirer');
 }
 
-if (fichiers.length === 0) erreurs.push('aucun cru trouvé');
+if (!fichiers.some(({ d }) => d.endsWith('/crus'))) erreurs.push('aucun cru trouvé');
 
 // Liens vagues : une page d'accueil, un profil X, un index de blog ou un forum entier au lieu de la source précise.
 // Signalés sans bloquer la publication.
 const avertissements = [];
-for (const fichier of fichiers) {
-  const brut = readFileSync(join(DOSSIER, fichier), 'utf8');
+for (const { d, f } of fichiers) {
+  const fichier = `${d.split('/').pop()}/${f}`;
+  const brut = readFileSync(join(d, f), 'utf8');
   for (const [, texte, url] of brut.matchAll(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g)) {
     let u;
     try { u = new URL(url); } catch { avertissements.push(`${fichier} : lien illisible « ${url} »`); continue; }
