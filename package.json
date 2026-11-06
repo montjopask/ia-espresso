@@ -6,7 +6,8 @@
     "verifier": "node scripts/verifier-crus.mjs",
     "build": "node scripts/verifier-crus.mjs && astro build && pagefind --site dist",
     "dev": "astro dev",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "controle-visuel": "node scripts/controle-visuel.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "7.3.1",

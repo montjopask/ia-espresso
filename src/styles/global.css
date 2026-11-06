@@ -249,7 +249,16 @@ img, svg { max-width: 100%; }
   font-variation-settings: 'opsz' 144;
   letter-spacing: -0.025em;
   line-height: 0.92;
+  font-size: var(--mot-max, 1em);
   overflow-wrap: anywhere;
+}
+
+/* Le mot du jour tient sur sa ligne : sa taille se calcule sur la largeur du cadre (--l, largeur du mot
+   en em, mesurée à la construction), plafonnée par --mot-max. Aucune lettre ne passe à la ligne. */
+.mot-cadre { display: block; min-width: 0; container-type: inline-size; }
+.mot-ligne { display: block; }
+@supports (width: 1cqi) {
+  .mot { white-space: nowrap; overflow-wrap: normal; font-size: min(var(--mot-max, 1em), calc(100cqi / var(--l, 6))); }
 }
 
 .themes {
@@ -312,7 +321,7 @@ img, svg { max-width: 100%; }
   padding-block: clamp(28px, 6vw, 64px) clamp(40px, 7vw, 88px);
 }
 .une-surtitre { grid-column: 1 / -1; }
-.une .mot { font-size: clamp(64px, 11.5vw, 156px); padding-bottom: 0.08em; }
+.une .mot { --mot-max: clamp(64px, 11.5vw, 156px); padding-bottom: 0.08em; }
 .une-texte { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 .une h2 {
   margin: 0;
@@ -350,7 +359,7 @@ img, svg { max-width: 100%; }
   transition: background-color 0.2s ease, transform 0.25s cubic-bezier(.2,.7,.2,1);
 }
 .carte:hover { background: var(--fond-3); transform: translateY(-2px); }
-.carte .mot { font-size: clamp(40px, 5vw, 60px); }
+.carte .mot { --mot-max: clamp(40px, 5vw, 60px); }
 .carte-titre {
   margin: 4px 0 0;
   font-family: var(--f-titre);
@@ -374,7 +383,7 @@ img, svg { max-width: 100%; }
   padding: clamp(26px, 3.5vw, 40px);
 }
 .speciale-tete { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.speciale .mot { font-size: clamp(48px, 7vw, 92px); padding-bottom: 0.06em; }
+.speciale .mot { --mot-max: clamp(48px, 7vw, 92px); padding-bottom: 0.06em; }
 .speciale-texte { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .speciale .carte-titre { margin: 0; font-size: clamp(22px, 2.4vw, 27px); }
 .speciale .chapeau { font-size: 16.5px; max-width: 60ch; }
@@ -399,7 +408,7 @@ img, svg { max-width: 100%; }
 }
 .liste a:hover { background: var(--fond-2); }
 .liste-date { font-size: 14px; color: var(--encre-3); font-variant-numeric: tabular-nums; }
-.liste .mot { font-size: 26px; line-height: 1.1; }
+.liste .mot { --mot-max: 26px; line-height: 1.1; }
 .liste-titre { font-size: 16px; color: var(--encre); }
 .liste-themes { font-size: 13px; color: var(--encre-3); text-align: right; }
 
@@ -416,7 +425,7 @@ img, svg { max-width: 100%; }
 }
 .retour { font-size: 15px; color: var(--encre-2); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
 .retour:hover { color: var(--encre); }
-.cru-tete .mot { font-size: clamp(56px, 10vw, 128px); }
+.cru-tete .mot { --mot-max: clamp(56px, 10vw, 128px); }
 .cru-tete h1 {
   margin: 0;
   font-family: var(--f-titre);
@@ -491,7 +500,7 @@ img, svg { max-width: 100%; }
 }
 .voisins a { display: flex; flex-direction: column; gap: 6px; padding: 20px 24px; border-radius: 16px; background: var(--fond-2); text-decoration: none; }
 .voisins a:hover { background: var(--fond-3); }
-.voisins .mot { font-size: 34px; }
+.voisins .mot { --mot-max: 34px; }
 .voisins .sens { font-size: 13px; color: var(--encre-3); }
 .voisins .apres { text-align: right; grid-column: 2; }
 

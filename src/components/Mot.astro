@@ -1,0 +1,19 @@
+---
+// Le mot du jour, dans un cadre qui lui donne la largeur disponible : la taille de la lettre se
+// calcule pour que le mot tienne sur sa ligne (ou ses deux lignes), sans jamais couper une lettre.
+import { largeurEm, lignesMot } from '../lib/mot';
+
+interface Props {
+  mot: string;
+  balise?: 'p' | 'span';
+  coupe?: boolean;
+  masque?: boolean;
+}
+const { mot, balise = 'span', coupe = false, masque = false } = Astro.props;
+const lignes = coupe ? lignesMot(mot) : [mot];
+// Marge de 0,1 em : la dernière lettre italique déborde un peu de sa chasse.
+const l = (Math.max(...lignes.map(largeurEm)) + 0.1).toFixed(3);
+const Cadre = balise === 'p' ? 'div' : 'span';
+const Balise = balise;
+---
+<Cadre class="mot-cadre"><Balise class="mot" style={`--l: ${l}`} aria-hidden={masque ? 'true' : undefined}>{lignes.length > 1 ? lignes.map((ligne) => <span class="mot-ligne">{ligne}</span>) : mot}</Balise></Cadre>

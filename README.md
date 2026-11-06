@@ -43,6 +43,12 @@ Phrase de contexte.
 
 Thèmes possibles : `modeles`, `agents`, `creativite`, `raisonnement`, `code`, `memoire`, `recherche`, `infrastructure`, `entreprise`, `ethique`.
 
+## Mot du jour et contrôle visuel
+
+Le mot du jour n’a pas de longueur imposée. Le composant `Mot.astro` mesure sa largeur à la construction (`src/lib/mot.ts`, table des signes de Fraunces italique) et la feuille de style en déduit la taille de la lettre, plafonnée selon l’emplacement : le mot tient sur sa ligne, sans lettre rejetée à la ligne. Dans les grands formats (la une, l’en-tête d’un cru, l’édition spéciale), un mot composé long se coupe en deux lignes à son trait d’union.
+
+`npm run build` puis `npm run controle-visuel` charge l’accueil, les archives et chaque cru à une douzaine de largeurs d’écran, de 320 à 2 560 px, et signale tout mot qui passe à la ligne ou déborde, et toute page qui défile en largeur. L’option `-- --captures <dossier>` enregistre aussi des captures de la une et du dernier cru, sur téléphone et sur grand écran.
+
 ## Éditions spéciales
 
 Une édition spéciale consacre tout un numéro à un seul sujet. Elle vit dans `src/content/speciales/AAAA-MM-JJ.md`, avec le même en-tête qu’un cru ; son mot du jour ne doit avoir servi à aucun cru, quotidien ou spécial. Elle ne remplace pas le cru du jour : l’accueil la présente dans un encadré à part pendant dix jours, les archives et les thèmes la rangent avec les autres, et son adresse porte la mention `speciale` (`/crus/AAAA-MM-JJ-speciale-mot/`).

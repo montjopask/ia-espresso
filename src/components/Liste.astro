@@ -1,4 +1,5 @@
 ---
+import Mot from './Mot.astro';
 import { dateCourte, dateIso, estSpeciale, lienCru, type Cru } from '../lib/crus';
 import { typo } from '../lib/typo.mjs';
 import { LIBELLES } from '../lib/themes';
@@ -13,7 +14,7 @@ const { crus } = Astro.props;
     <li>
       <a href={lienCru(c)}>
         <time class="liste-date" datetime={dateIso(c.data.date)}>{dateCourte(c.data.date)}</time>
-        <span class="mot">{c.data.mot}</span>
+        <Mot mot={c.data.mot} />
         <span class="liste-titre">{typo(c.data.titre)}</span>
         {estSpeciale(c)
           ? <span class="liste-themes liste-speciale">Édition spéciale</span>

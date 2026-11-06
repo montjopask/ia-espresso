@@ -1,4 +1,5 @@
 ---
+import Mot from '../components/Mot.astro';
 import Base from '../layouts/Base.astro';
 import Themes from '../components/Themes.astro';
 import Liste from '../components/Liste.astro';
@@ -31,7 +32,7 @@ const jsonld = {
 
   <section class="une" aria-labelledby="une-titre">
     <p class="surtitre une-surtitre">Cru du jour · <time datetime={dateIso(jour.data.date)}>{dateLongue(jour.data.date)}</time></p>
-    <p class="mot" aria-hidden="true">{jour.data.mot}</p>
+    <Mot mot={jour.data.mot} balise="p" coupe masque />
     <div class="une-texte">
       <h2 id="une-titre"><a href={lienCru(jour)}>{typo(jour.data.titre)}</a></h2>
       <div class="chapeau" set:html={chapeauHtml(jour)} />
@@ -49,7 +50,7 @@ const jsonld = {
       <a class="carte speciale" href={lienCru(speciale)}>
         <div class="speciale-tete">
           <time class="carte-date" datetime={dateIso(speciale.data.date)}>{dateCourte(speciale.data.date)}</time>
-          <span class="mot">{speciale.data.mot}</span>
+          <Mot mot={speciale.data.mot} coupe />
         </div>
         <div class="speciale-texte">
           <h3 class="carte-titre">{typo(speciale.data.titre)}</h3>
@@ -67,7 +68,7 @@ const jsonld = {
         {precedents.map((c) => (
           <a class="carte" href={lienCru(c)}>
             <time class="carte-date" datetime={dateIso(c.data.date)}>{dateCourte(c.data.date)}</time>
-            <span class="mot">{c.data.mot}</span>
+            <Mot mot={c.data.mot} />
             <h3 class="carte-titre">{typo(c.data.titre)}</h3>
             <p class="carte-extrait">{premierePhrase(c)}</p>
           </a>
