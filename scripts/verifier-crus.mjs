@@ -31,7 +31,7 @@ for (const { d, f: fichier } of fichiers) {
   if (!fm.chapeau || String(fm.chapeau).trim().length < 20) ici('chapeau absent ou trop court');
 
   const mot = String(fm.mot || '');
-  if (!/^\p{L}[\p{L}’'-]*$/u.test(mot)) ici(`mot du jour invalide (« ${mot} ») : un seul mot attendu`);
+  if (!/^\p{L}[\p{L}’'-]*( \p{L}[\p{L}’'-]*)?$/u.test(mot)) ici(`mot du jour invalide (« ${mot} ») : un ou deux mots attendus, séparés par une seule espace`);
   const cle = mot.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   if (mots.has(cle)) ici(`mot du jour « ${mot} » déjà pris par ${mots.get(cle)}`);
   else mots.set(cle, nom);

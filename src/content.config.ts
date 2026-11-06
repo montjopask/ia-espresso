@@ -6,7 +6,7 @@ import { THEMES } from './lib/themes';
 const schema = z.object({
   date: z.coerce.date(),
   titre: z.string().min(3),
-  mot: z.string().min(2).regex(/^\p{L}[\p{L}’'-]*$/u, 'Le mot du jour doit être un seul mot'),
+  mot: z.string().min(2).regex(/^\p{L}[\p{L}’'-]*( \p{L}[\p{L}’'-]*)?$/u, 'Le mot du jour tient en un ou deux mots'),
   themes: z.array(z.enum(THEMES)).min(1).max(4),
   chapeau: z.string().min(20),
 });

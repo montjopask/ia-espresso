@@ -16,7 +16,7 @@ Le site est entièrement statique : chaque page est fabriquée à l’avance, en
 ---
 date: 2026-10-12
 titre: "Le vendeur invisible"
-mot: "Coulisses"            # un seul mot, jamais deux fois le même
+mot: "Coulisses"            # un ou deux mots, jamais deux fois le même
 themes: ["entreprise", "creativite"]
 chapeau: |
   **Phrase d’attaque.** Suite du chapô.
@@ -45,7 +45,7 @@ Thèmes possibles : `modeles`, `agents`, `creativite`, `raisonnement`, `code`, `
 
 ## Mot du jour et contrôle visuel
 
-Le mot du jour n’a pas de longueur imposée. Le composant `Mot.astro` mesure sa largeur à la construction (`src/lib/mot.ts`, table des signes de Fraunces italique) et la feuille de style en déduit la taille de la lettre, plafonnée selon l’emplacement : le mot tient sur sa ligne, sans lettre rejetée à la ligne. Dans les grands formats (la une, l’en-tête d’un cru, l’édition spéciale), un mot composé long se coupe en deux lignes à son trait d’union.
+Le mot du jour tient en un ou deux mots, sans longueur imposée. Le composant `Mot.astro` mesure sa largeur à la construction (`src/lib/mot.ts`, table des signes de Fraunces italique) et la feuille de style en déduit la taille de la lettre, plafonnée selon l’emplacement : le mot tient sur sa ligne, sans lettre rejetée à la ligne. Dans les grands formats (la une, l’en-tête d’un cru, l’édition spéciale), un mot composé long se coupe en deux lignes à son trait d’union, et deux mots à leur espace.
 
 `npm run build` puis `npm run controle-visuel` charge l’accueil, les archives et chaque cru à une douzaine de largeurs d’écran, de 320 à 2 560 px, et signale tout mot qui passe à la ligne ou déborde, et toute page qui défile en largeur. L’option `-- --captures <dossier>` enregistre aussi des captures de la une et du dernier cru, sur téléphone et sur grand écran.
 
